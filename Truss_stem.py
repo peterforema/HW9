@@ -287,7 +287,7 @@ class TrussController():
         self.displayReport()
         self.drawTruss()
 
-    self.calcLinkVals()
+        self.calcLinkVals()
         self.displayReport()
         self.drawTruss()
 
@@ -329,6 +329,8 @@ class TrussController():
 
     def drawTruss(self):
         self.view.buildScene(truss=self.truss)
+
+        pass
 
 
 class TrussView():
@@ -434,18 +436,31 @@ class TrussView():
         # JES MISSING CODE HERE$
         pass
 
-    def drawLinks(self, truss=None):
-        # $JES MISSING CODE HERE$
-        pass
+    def drawLinks(self, truss):
+        for link in truss.links:
+            node1 = truss.getNode(link.node1_Name)
+            node2 = truss.getNode(link.node2_Name)
+            if node1 and node2:
+                line = self.scene.addLine(node1.position.x, node1.position.y,
+                                          node2.position.x, node2.position.y, self.penLink)
+                line.setZValue(-1)  # Ensure links are behind nodes
 
-    def drawNodes(self, truss=None, scene=None):
-        # $JES MISSING CODE HERE$
-        pass
+    def drawNodes(self, truss):
+        for node in truss.nodes:
+            self.drawACircle(node.position.x, node.position.y, 5, 0, self.brushNode, self.penNode, name=node.name)
+
 
     def drawALabel(self, x, y, str='', pen=None, brush=None, tip=None):
         # $JES MISSING CODE HERE$
         pass
 
-    def drawACircle(self, centerX, centerY, Radius, angle=0, brush=None, pen=None, name=None, tooltip=None):
-        # $JES MISSING CODE HERE
-        pass
+    def drawACircle(self, centerX, centerY, Radius, angle, brush, pen, name=None, tooltip=None):
+        circle = self.scene.addEllipse(centerX - Radius, centerY - Radius,
+                                       2 * Radius, 2 * Radius, pen, brush)
+        if tooltip:
+            circle.setToolTip(tooltip)
+        if name:
+            # Optional: Add a label next to the circle
+            text = self.scene.addText(name, qtg.QFont("Arial", 8))
+            text.setPos(centerX + Radius / 2, centerY - Radius / 2)
+            text.setZValue(1)

@@ -40,24 +40,23 @@ class MainWindow(Ui_TrussStructuralDesign,qtw.QWidget):
                 scenePos = event.scenePos()
                 strScene = "Mouse Position:  x = {}, y = {}".format(round(scenePos.x(), 2), round(-scenePos.y(), 2))
                 self.lbl_MousePos.setText(strScene)  # display information in a label
-            if event.type() == qtc.QEvent.GraphicsSceneWheel:  # I added this to zoom on mouse wheel scroll
-                if event.delta() > 0:
+            if event.type() == qtc.QEvent.GraphicsSceneWheel:
+                angleDelta = event.angleDelta()
+                if angleDelta.y() > 0:
                     self.spnd_Zoom.stepUp()
                 else:
                     self.spnd_Zoom.stepDown()
-                pass
+                return True
 
         # pass the event along to the parent widget if there is one.
         return super(MainWindow, self).eventFilter(obj, event)
 
     def OpenFile(self):
-        filename = qtw.QFileDialog.getOpenFileName()[0]
-        if len(filename) == 0:  # no file selected
-            return
-        self.te_Path.setText(filename)
-        file = open(filename, 'r')  # open the file
-        data = file.readlines()  # read all the lines of the file into a list of strings
-        self.controller.ImportFromFile(data)  # import the pipe network information
+        filename, _ = qtw.QFileDialog.getOpenFileName(self, "Open Truss File")
+        if filename:  # Check if a filename is returned
+            self.te_Path.setText(filename)
+            self.controller.ImportFromFile(filename)  # Pass filename to controller
+
 
 def Main():
     app=qtw.QApplication(sys.argv)
